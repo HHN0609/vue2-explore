@@ -1,0 +1,18 @@
+{
+  "name": "explore-vue",
+  "version": "1.0.0",
+  "description": "An experiment to explore the fundamental of Vue's reactive and nexttick",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node ./test.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "vue",
+    "reactive",
+    "nexttick"
+  ],
+  "author": "hehaonan",
+  "license": "ISC"
+}
