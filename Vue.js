@@ -1,5 +1,5 @@
 // 全局变量
-const updateQueue = []; //异步更新队列
+const updateQueue = []; //异步更新队列，存放的是watcher实例
 let has = {}; //控制变更队列中不保存重复的Watcher
 const callbacks = [];
 let pending = false;
@@ -103,13 +103,6 @@ export class Watcher {
         if (this.value !== this.vm.$data[this.key]) {
             // 更新旧的值
             this.value = this.vm.$data[this.key];
-            
-            //控制变量，控制每次事件循环期间只 添加一次 flushUpdateQueue 到callbacks
-            // 注意这里不是把watcher添加到callbacks里，而是flushUpdateQueue（一个watcher数组）
-            if (this.vm.waiting === false) {
-                this.vm.$nextTick(this.vm.flushUpdateQueue);
-                this.vm.waiting = true;
-            }
 
             //不是立即执行run方法，而是把watcher实例放入updateQueue队列中
             // 这里的uid是watcher的唯一标识符
@@ -118,10 +111,20 @@ export class Watcher {
                 has[this.uid] = true;
                 updateQueue.push(this);
             }
+            
+            //控制变量，控制每次事件循环期间只 添加一次 flushUpdateQueue 到callbacks
+            // 注意这里不是把watcher添加到callbacks里，而是flushUpdateQueue（一个watcher数组）
+            if (this.vm.waiting === false) {
+                this.vm.$nextTick(this.vm.flushUpdateQueue);
+                this.vm.waiting = true;
+            }
+
         }
     }
 
     run() {
+        // 在一个事件循环内watcher实例的value属性永远是最新的值
+        // 在后续统一更新的时候（cb执行的时候）拿到的也是最新的值
         this.cb(this.value);
     }
 }
@@ -138,9 +141,9 @@ export class Vue {
 
     //简易版nextTick
     nextTick(cb) {
-        console.log("nextTick!");
         callbacks.push(cb);
-        if (!pending) {//控制变量，控制每次事件循环期间只执行一次flushCallbacks
+        //控制变量，控制每次事件循环期间只执行一次flushCallbacks
+        if (!pending) {
             pending = true;
             if(Promise){
                 Promise.resolve().then(() => {

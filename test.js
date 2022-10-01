@@ -4,7 +4,11 @@ import {Vue, Watcher} from "./Vue.js";
 //======测试=======
 let data={
     message:'hello',
-    num:0
+    num:0,
+    info: {
+        name: "hhn",
+        age: 10
+    }
 };
 
 let app=new Vue({
@@ -12,6 +16,7 @@ let app=new Vue({
 });
 
 //模拟数据监听
+// 监听app这个实例上的message属性
 new Watcher(app,'message',function(value){
     //模拟dom变更
     console.log('message 引起的dom变更--->',value);
